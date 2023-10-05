@@ -6,4 +6,10 @@
             <certificates src="user" />
         </trust-anchors>
     </base-config>
+    <domain-config>
+        <domain includeSubdomains="true">example.com</domain>
+        <trust-anchors>
+            <certificates src="@raw/openfire_ts_lab_key"/>
+        </trust-anchors>
+    </domain-config>
 </network-security-config>

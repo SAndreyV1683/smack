@@ -8,7 +8,7 @@ class ConnectXmpp : Service() {
 
     private var userName = ""
     private var password = ""
-    val xmpp = MyXMPP()
+    val xmpp = MyXMPP(this)
 
     override fun onBind(intent: Intent): IBinder {
         return LocalBinder(this)

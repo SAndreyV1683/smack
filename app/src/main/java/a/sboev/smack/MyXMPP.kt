@@ -21,6 +21,8 @@ import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smack.chat2.Chat
 import org.jivesoftware.smack.chat2.ChatManager
+import org.jivesoftware.smack.debugger.SmackDebugger
+import org.jivesoftware.smack.debugger.SmackDebuggerFactory
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
 import org.jxmpp.jid.impl.JidCreate
@@ -37,7 +39,7 @@ import javax.net.ssl.TrustManagerFactory
 import javax.security.cert.CertificateException
 
 
-class MyXMPP {
+class MyXMPP(private val context: Context) {
 
     private var userName = ""
     private var passWord = ""
@@ -49,6 +51,7 @@ class MyXMPP {
     private val isToasted = false
     private var chat_created = false
     private var loggedin = false
+    private var smackDebuger: SmackDebugger? = null
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable -> onError("Exception handled: ${throwable.localizedMessage}") }
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
@@ -61,10 +64,11 @@ class MyXMPP {
         Log.i("XMPP", "Initializing!")
         userName = userId
         passWord = pwd
+        AndroidSmackInitializer.initialize(context);
         val configBuilder = XMPPTCPConnectionConfiguration.builder()
         configBuilder.setUsernameAndPassword(userName, passWord)
         configBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.required)
-        configBuilder.setSocketFactory(SSLSocketFactory())
+        //configBuilder.setSocketFactory(SSLSocketFactory())
 
         configBuilder.setResource("Android")
         configBuilder.setXmppDomain(HOST)
@@ -72,6 +76,7 @@ class MyXMPP {
         configBuilder.setPort(PORT)
         connection = XMPPTCPConnection(configBuilder.build())
         (connection as XMPPTCPConnection).addConnectionListener(connectionListener)
+
         System.setProperty("smack.debuggerClass","org.jivesoftware.smack.debugger.ConsoleDebugger");
         System.setProperty("smack.debugEnabled", "true");
         SmackConfiguration.DEBUG = true
@@ -203,7 +208,7 @@ class MyXMPP {
     }
 
     companion object {
-        private const val HOST = "jabber.hot-chilli.net"
+        private const val HOST = "openfire.ts.lab"
         private const val PORT = 5222
         private val TAG = MyXMPP::class.simpleName
     }

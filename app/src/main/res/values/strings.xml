@@ -8,8 +8,8 @@
     <string name="btn_send">send</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="txt_username">andreysv</string>
-    <string name="txt_pwd">password</string>
+    <string name="txt_username">sboev</string>
+    <string name="txt_pwd">sboev</string>
     <string name="check_rem">Remember?</string>
     <string name="title_activity_login">Login</string>
     <string name="copyright">Copyright © 2015.</string>
