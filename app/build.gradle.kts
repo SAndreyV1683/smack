@@ -52,7 +52,7 @@ dependencies {
     // Optional for XMPP extensions support
     //implementation ("org.igniterealtime.smack:smack-extensions:4.4.0")
     implementation ("org.igniterealtime.smack:smack-android-extensions:4.4.0")
-
+    implementation("org.bouncycastle:bcprov-jdk15on:1.70")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")

@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import org.jivesoftware.smack.AbstractXMPPConnection
 import org.jivesoftware.smack.ConnectionConfiguration
 import org.jivesoftware.smack.ConnectionListener
+import org.jivesoftware.smack.SASLAuthentication
 import org.jivesoftware.smack.SmackConfiguration
 import org.jivesoftware.smack.SmackException
 import org.jivesoftware.smack.SmackException.NotConnectedException
@@ -22,7 +23,6 @@ import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smack.chat2.Chat
 import org.jivesoftware.smack.chat2.ChatManager
 import org.jivesoftware.smack.debugger.SmackDebugger
-import org.jivesoftware.smack.debugger.SmackDebuggerFactory
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
 import org.jxmpp.jid.impl.JidCreate
@@ -68,11 +68,11 @@ class MyXMPP(private val context: Context) {
         val configBuilder = XMPPTCPConnectionConfiguration.builder()
         configBuilder.setUsernameAndPassword(userName, passWord)
         configBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.required)
-        //configBuilder.setSocketFactory(SSLSocketFactory())
+        /*val sslContext = SSLContext.getDefault()
+        configBuilder.setSocketFactory(sslContext.socketFactory)*/
 
-        configBuilder.setResource("Android")
         configBuilder.setXmppDomain(HOST)
-        configBuilder.setHost(HOST)
+        //configBuilder.setHost(HOST)
         configBuilder.setPort(PORT)
         connection = XMPPTCPConnection(configBuilder.build())
         (connection as XMPPTCPConnection).addConnectionListener(connectionListener)
@@ -81,6 +81,27 @@ class MyXMPP(private val context: Context) {
         System.setProperty("smack.debugEnabled", "true");
         SmackConfiguration.DEBUG = true
     }
+
+    /*@Throws(
+        KeyStoreException::class,
+        NoSuchAlgorithmException::class,
+        KeyManagementException::class,
+        IOException::class,
+        CertificateException::class
+    )
+    private fun createSSLContext(context: Context): SSLContext? {
+        val trustStore: KeyStore
+        var `in`: InputStream? = null
+        trustStore = KeyStore.getInstance("BKS")
+        `in` = context.resources.openRawResource(R.raw.my_keystore)
+        trustStore.load(`in`, "MyPassword123".toCharArray())
+        val trustManagerFactory = TrustManagerFactory
+            .getInstance(KeyManagerFactory.getDefaultAlgorithm())
+        trustManagerFactory.init(trustStore)
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustManagerFactory.trustManagers, SecureRandom())
+        return sslContext
+    }*/
 
 
 
@@ -97,7 +118,6 @@ class MyXMPP(private val context: Context) {
             try {
                 Log.d(TAG, "Connecting ...")
                 connection!!.connect()
-                //login()
                 connected = true
             } catch (e: IOException) {
                 e.message?.let { Log.e(TAG, it) }
@@ -141,7 +161,9 @@ class MyXMPP(private val context: Context) {
     //Connection Listener to check connection state
     inner class XMPPConnectionListener : ConnectionListener {
         override fun connected(connection: XMPPConnection) {
-            Log.d("xmpp", "Connected!")
+            Log.d("xmpp", "Connected! isAuthenticated ${connection.isAuthenticated}")
+            SASLAuthentication.unBlacklistSASLMechanism("PLAIN");
+            SASLAuthentication.blacklistSASLMechanism("DIGEST-MD5");
             connected = true
             if (!connection.isAuthenticated) {
                 login()
@@ -208,7 +230,7 @@ class MyXMPP(private val context: Context) {
     }
 
     companion object {
-        private const val HOST = "openfire.ts.lab"
+        private const val HOST = "jix.im"
         private const val PORT = 5222
         private val TAG = MyXMPP::class.simpleName
     }

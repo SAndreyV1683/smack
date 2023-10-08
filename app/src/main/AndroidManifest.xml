@@ -16,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Smack"
         android:networkSecurityConfig="@xml/network_security_configuration"
+
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="33">
         <service
